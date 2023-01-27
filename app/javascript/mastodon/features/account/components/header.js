@@ -81,6 +81,7 @@ class Header extends ImmutablePureComponent {
     super(props);
     this.state = {
       data: {},
+      percentage: 0,
     };
     this.source = axios.CancelToken.source();
   };
@@ -117,6 +118,9 @@ class Header extends ImmutablePureComponent {
     axios.get(`/blockchain_info/${this.props.account.get('id')}`, { cancelToken: this.source.token })
       .then(response => {
         this.setState({ data: response.data });
+        if (response.data.exp && response.data.exp_to_next_level) {
+          this.setState({ percentage: Math.round((response.data.exp / response.data.exp_to_next_level) * 100) });
+        }
         // eslint-disable-next-line no-console
         console.log('response data', response.data);
       })
@@ -388,9 +392,13 @@ class Header extends ImmutablePureComponent {
                 {account.get('note').length > 0 && account.get('note') !== '<p></p>' && <div className='account__header__content translate' dangerouslySetInnerHTML={content} />}
 
                 <div className='account__header__fields'>
-                  <dl>
+                  <dl style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <dt><FormattedMessage id='account.joined_short' defaultMessage='Joined' /></dt>
-                    <dd>{intl.formatDate(account.get('created_at'), { year: 'numeric', month: 'short', day: '2-digit' })}</dd>
+                    <dd style={{ marginLeft: '1rem' }}>{intl.formatDate(account.get('created_at'), { year: 'numeric', month: 'short', day: '2-digit' })}</dd>
+                    <div style={{ display: 'flex' }} >
+                      <dt>Claim streak <span role='img' aria-label='claim-streak'>🏆</span></dt>
+                      <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_claim_day_streak ? this.state.data.daily_claim_day_streak : 0}</dd>
+                    </div>
                   </dl>
 
                   {fields.map((pair, i) => (
@@ -403,31 +411,30 @@ class Header extends ImmutablePureComponent {
                     </dl>
                   ))}
 
-                  <dl style={{ display: 'flex' }}>
-                    <dt><FormattedMessage id='tokens' defaultMessage='Tokens to claim' /></dt>
-                    <dd style={{ marginLeft: '1rem' }}>{this.state.data ? this.state.data.id : 100}</dd>
-                    <dt><FormattedMessage id='level' defaultMessage='Level' /></dt>
-                    <dd style={{ marginLeft: '1rem' }}>10</dd>
-                    <dt><FormattedMessage id='score' defaultMessage='Score' /></dt>
-                    <dd style={{ marginLeft: '1rem' }}>7</dd>
+                  <dl style={{ display: 'flex', alignItems: 'center' }}>
+                    <dt><FormattedMessage id='balance' defaultMessage='Balance' /></dt>
+                    <dd style={{ marginLeft: '1rem' }}>{this.state.data.total_tokens_claimed ? this.state.data.total_tokens_claimed : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
+                    <dt><FormattedMessage id='daily' defaultMessage='Daily Reward' /></dt>
+                    <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_payout_value ? this.state.data.daily_payout_value.toFixed(4) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
+                    <Button text='Claim' onClick={this.handleClaim} disabled={this.state?.data?.daily_payout_claimed} />
                   </dl>
                 </div>
 
-                <div className='upload-progress' style={{ flex: '1 1 0%' }}>
+                <div className='upload-progress' style={{ flex: '1 1 0%', marginTop: '0.5rem' }}>
                   <div className='upload-progress__message'>
-                    Progressing
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <p>Level: {this.state.data.level ? this.state.data.level : 0}</p>
+                      <p>Exp: {this.state.data.exp ? this.state.data.exp : 0}</p>
+                      <p>Exp to next level: {this.state.data.exp_to_next_level ? this.state.data.exp_to_next_level : 0}</p>
+                    </div>
                     <div className='upload-progress__backdrop'>
-                      <div className='upload-progress__tracker' style={{ width: '80%' }} />
+                      <div className='upload-progress__tracker' style={{ width: `${this.state.percentage}%` }} />
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div style={{ marginTop: '0.7rem', textAlign: 'right' }}>
-                <Button text='Claim' onClick={this.handleClaim} />
-              </div>
-
-              <div className='account__header__extra__links'>
+              <div className='account__header__extra__links' style={{ display: 'flex', alignItems: 'center' }}>
                 <NavLink isActive={this.isStatusesPageActive} activeClassName='active' to={`/@${account.get('acct')}`} title={intl.formatNumber(account.get('statuses_count'))}>
                   <ShortNumber
                     value={account.get('statuses_count')}
@@ -448,6 +455,11 @@ class Header extends ImmutablePureComponent {
                     renderer={counterRenderer('followers')}
                   />
                 </NavLink>
+
+                <p style={{ marginLeft: '0.7rem' }}>
+                  <span style={{ fontWeight: 'bold', color: 'white' }} aria-label='social-score'>{this.state.data.social_score ? this.state.data.social_score : 0}</span>
+                  {' '}Social Score
+                </p>
               </div>
             </div>
           )}
