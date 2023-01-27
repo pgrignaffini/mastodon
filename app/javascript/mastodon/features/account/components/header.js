@@ -415,7 +415,7 @@ class Header extends ImmutablePureComponent {
 
                 <div className='upload-progress' style={{ flex: '1 1 0%' }}>
                   <div className='upload-progress__message'>
-                    Progress
+                    Progressing
                     <div className='upload-progress__backdrop'>
                       <div className='upload-progress__tracker' style={{ width: '80%' }} />
                     </div>
