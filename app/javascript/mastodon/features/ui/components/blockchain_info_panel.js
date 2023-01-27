@@ -10,7 +10,6 @@ export default class BlockchainInfoPanel extends React.PureComponent {
         super(props);
         this.state = {
             data: {},
-            percentage: 0,
         };
         this.source = axios.CancelToken.source();
     };
@@ -23,9 +22,6 @@ export default class BlockchainInfoPanel extends React.PureComponent {
         axios.get(`/blockchain_info/${this.props.accountId}`, { cancelToken: this.source.token })
             .then(response => {
                 this.setState({ data: response.data });
-                if (response.data.exp && response.data.exp_to_next_level) {
-                    this.setState({ percentage: Math.round((response.data.exp / response.data.exp_to_next_level) * 100) });
-                }
                 // eslint-disable-next-line no-console
                 console.log('response data', response.data);
             })
@@ -50,7 +46,7 @@ export default class BlockchainInfoPanel extends React.PureComponent {
                     <div className='account__header__fields'>
                         <dl style={{ display: 'flex', alignItems: 'center' }}>
                             <dt>Social Score</dt>
-                            <dd style={{ marginLeft: '1rem' }}>{this.state.data.social_score ? this.state.data.social_score : 0}</dd>
+                            <dd style={{ marginLeft: '1rem' }}>{this.state.data.social_score ? this.state.data.social_score.toFixed(0) : 0}</dd>
                         </dl>
                         <dl>
                             <div style={{ display: 'flex' }}>
@@ -58,7 +54,7 @@ export default class BlockchainInfoPanel extends React.PureComponent {
                                 <dd style={{ marginLeft: '1rem' }}>{this.state.data.level ? this.state.data.level : 0}</dd>
                             </div>
                             <div className='upload-progress__backdrop'>
-                                <div className='upload-progress__tracker' style={{ width: `${this.state.percentage}%` }} />
+                                <div className='upload-progress__tracker' style={{ width: `${this.state.data.percentage_to_next_level ? this.state.data.percentage_to_next_level : 0}%` }} />
                             </div>
                         </dl>
                         <dl style={{ display: 'flex', alignItems: 'center' }}>
@@ -67,7 +63,7 @@ export default class BlockchainInfoPanel extends React.PureComponent {
                         </dl>
                         <dl style={{ display: 'flex', alignItems: 'center' }}>
                             <dt>Daily Reward</dt>
-                            <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_payout_value ? this.state.data.daily_payout_value.toFixed(2) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
+                            <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_payout_value ? this.state.data.daily_payout_value.toFixed(0) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
                         </dl>
                     </div>
                 </div>

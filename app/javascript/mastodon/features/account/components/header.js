@@ -81,7 +81,6 @@ class Header extends ImmutablePureComponent {
     super(props);
     this.state = {
       data: {},
-      percentage: 0,
     };
     this.source = axios.CancelToken.source();
   };
@@ -118,9 +117,6 @@ class Header extends ImmutablePureComponent {
     axios.get(`/blockchain_info/${this.props.account.get('id')}`, { cancelToken: this.source.token })
       .then(response => {
         this.setState({ data: response.data });
-        if (response.data.exp && response.data.exp_to_next_level) {
-          this.setState({ percentage: Math.round((response.data.exp / response.data.exp_to_next_level) * 100) });
-        }
         // eslint-disable-next-line no-console
         console.log('response data', response.data);
       })
@@ -415,7 +411,7 @@ class Header extends ImmutablePureComponent {
                     <dt><FormattedMessage id='balance' defaultMessage='Balance' /></dt>
                     <dd style={{ marginLeft: '1rem' }}>{this.state.data.num_tokens_available ? this.state.data.num_tokens_available : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
                     <dt><FormattedMessage id='daily' defaultMessage='Daily Reward' /></dt>
-                    <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_payout_value ? this.state.data.daily_payout_value.toFixed(2) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
+                    <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_payout_value ? this.state.data.daily_payout_value.toFixed(0) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
                     <Button text='Claim' onClick={this.handleClaim} disabled={this.state?.data?.daily_payout_claimed} />
                   </dl>
                 </div>
@@ -425,10 +421,10 @@ class Header extends ImmutablePureComponent {
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <p>Level: {this.state.data.level ? this.state.data.level : 0}</p>
                       <p>Exp: {this.state.data.exp ? this.state.data.exp : 0}</p>
-                      <p>Exp to next level: {this.state.data.exp_to_next_level ? this.state.data.exp_to_next_level : 0}</p>
+                      <p>Exp to next level: {this.state.data.exp_to_next_level ? this.state.data.exp_to_next_level.toFixed(0) : 0}</p>
                     </div>
                     <div className='upload-progress__backdrop'>
-                      <div className='upload-progress__tracker' style={{ width: `${this.state.percentage}%` }} />
+                      <div className='upload-progress__tracker' style={{ width: `${this.state.data.percentage_to_next_level ? this.state.data.percentage_to_next_level : 0}%` }} />
                     </div>
                   </div>
                 </div>
@@ -457,7 +453,7 @@ class Header extends ImmutablePureComponent {
                 </NavLink>
 
                 <p style={{ marginLeft: '0.7rem' }}>
-                  <span style={{ fontWeight: 'bold', color: 'white' }} aria-label='social-score'>{this.state.data.social_score ? this.state.data.social_score : 0}</span>
+                  <span style={{ fontWeight: 'bold', color: 'white' }} aria-label='social-score'>{this.state.data.social_score ? this.state.data.social_score.toFixed(0) : 0}</span>
                   {' '}Social Score
                 </p>
               </div>
