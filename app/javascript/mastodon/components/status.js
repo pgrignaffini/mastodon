@@ -140,7 +140,7 @@ class Status extends ImmutablePureComponent {
       .then(response => {
         // eslint-disable-next-line no-console
         console.log('status data', response.data);
-        this.setState({ onChain: response.data?.local });
+        this.setState({ onChain: response.data?.event_index });
       })
       .catch(error => {
         console.log(error);

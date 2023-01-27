@@ -413,9 +413,9 @@ class Header extends ImmutablePureComponent {
 
                   <dl style={{ display: 'flex', alignItems: 'center' }}>
                     <dt><FormattedMessage id='balance' defaultMessage='Balance' /></dt>
-                    <dd style={{ marginLeft: '1rem' }}>{this.state.data.total_tokens_claimed ? this.state.data.total_tokens_claimed : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
+                    <dd style={{ marginLeft: '1rem' }}>{this.state.data.num_tokens_available ? this.state.data.num_tokens_available : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
                     <dt><FormattedMessage id='daily' defaultMessage='Daily Reward' /></dt>
-                    <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_payout_value ? this.state.data.daily_payout_value.toFixed(4) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
+                    <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_payout_value ? this.state.data.daily_payout_value.toFixed(2) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
                     <Button text='Claim' onClick={this.handleClaim} disabled={this.state?.data?.daily_payout_claimed} />
                   </dl>
                 </div>

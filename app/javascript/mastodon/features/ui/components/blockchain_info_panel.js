@@ -63,11 +63,11 @@ export default class BlockchainInfoPanel extends React.PureComponent {
                         </dl>
                         <dl style={{ display: 'flex', alignItems: 'center' }}>
                             <dt>Balance</dt>
-                            <dd style={{ marginLeft: '1rem' }}>{this.state.data.total_tokens_claimed ? this.state.data.total_tokens_claimed : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
+                            <dd style={{ marginLeft: '1rem' }}>{this.state.data.num_tokens_available ? this.state.data.num_tokens_available : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
                         </dl>
                         <dl style={{ display: 'flex', alignItems: 'center' }}>
                             <dt>Daily Reward</dt>
-                            <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_payout_value ? this.state.data.daily_payout_value.toFixed(4) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
+                            <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_payout_value ? this.state.data.daily_payout_value.toFixed(2) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
                         </dl>
                     </div>
                 </div>
