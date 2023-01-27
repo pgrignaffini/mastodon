@@ -7,6 +7,7 @@ import NavigationContainer from 'mastodon/features/compose/containers/navigation
 import LinkFooter from './link_footer';
 import ServerBanner from 'mastodon/components/server_banner';
 import { changeComposing, mountCompose, unmountCompose } from 'mastodon/actions/compose';
+import BlockchainInfoPanel from './blockchain_info_panel';
 
 export default @connect()
 class ComposePanel extends React.PureComponent {
@@ -29,18 +30,18 @@ class ComposePanel extends React.PureComponent {
     dispatch(changeComposing(false));
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const { dispatch } = this.props;
     dispatch(mountCompose());
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     const { dispatch } = this.props;
     dispatch(unmountCompose());
   }
 
   render() {
-    const { signedIn } = this.context.identity;
+    const { signedIn, accountId } = this.context.identity;
 
     return (
       <div className='compose-panel' onFocus={this.onFocus}>
@@ -56,6 +57,7 @@ class ComposePanel extends React.PureComponent {
         {signedIn && (
           <React.Fragment>
             <NavigationContainer onClose={this.onBlur} />
+            <BlockchainInfoPanel accountId={accountId} />
             <ComposeFormContainer singleColumn />
           </React.Fragment>
         )}
