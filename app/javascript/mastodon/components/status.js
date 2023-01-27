@@ -17,6 +17,7 @@ import classNames from 'classnames';
 import Icon from 'mastodon/components/icon';
 import { displayMedia } from '../initial_state';
 import PictureInPicturePlaceholder from 'mastodon/components/picture_in_picture_placeholder';
+import axios from 'axios';
 
 // We use the component (and not the container) since we do not want
 // to use the progress bar to show download progress
@@ -120,6 +121,7 @@ class Status extends ImmutablePureComponent {
     showMedia: defaultMediaVisibility(this.props.status),
     statusId: undefined,
     forceFilter: undefined,
+    onChain: false,
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -132,6 +134,18 @@ class Status extends ImmutablePureComponent {
       return null;
     }
   }
+
+  componentDidMount() {
+    axios.get(`/blockchain_info/status/${this.state.statusId}`)
+      .then(response => {
+        // eslint-disable-next-line no-console
+        console.log('status data', response.data);
+        this.setState({ onChain: response.data?.local });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
 
   handleToggleMediaVisibility = () => {
     this.setState({ showMedia: !this.state.showMedia });
@@ -154,7 +168,7 @@ class Status extends ImmutablePureComponent {
   }
 
   handleAccountClick = (e, proper = true) => {
-    if (e && (e.button !== 0 || e.ctrlKey || e.metaKey))  {
+    if (e && (e.button !== 0 || e.ctrlKey || e.metaKey)) {
       return;
     }
 
@@ -177,15 +191,15 @@ class Status extends ImmutablePureComponent {
     this.props.onTranslate(this._properStatus());
   }
 
-  renderLoadingMediaGallery () {
+  renderLoadingMediaGallery() {
     return <div className='media-gallery' style={{ height: '110px' }} />;
   }
 
-  renderLoadingVideoPlayer () {
+  renderLoadingVideoPlayer() {
     return <div className='video-player' style={{ height: '110px' }} />;
   }
 
-  renderLoadingAudioPlayer () {
+  renderLoadingAudioPlayer() {
     return <div className='audio-player' style={{ height: '110px' }} />;
   }
 
@@ -294,7 +308,7 @@ class Status extends ImmutablePureComponent {
     this.setState({ forceFilter: true });
   }
 
-  _properStatus () {
+  _properStatus() {
     const { status } = this.props;
 
     if (status.get('reblog', null) !== null && typeof status.get('reblog') === 'object') {
@@ -308,7 +322,7 @@ class Status extends ImmutablePureComponent {
     this.node = c;
   }
 
-  render () {
+  render() {
     let media = null;
     let statusAvatar, prepend, rebloggedByText;
 
@@ -385,7 +399,7 @@ class Status extends ImmutablePureComponent {
       rebloggedByText = intl.formatMessage({ id: 'status.reblogged_by', defaultMessage: '{name} boosted' }, { name: status.getIn(['account', 'acct']) });
 
       account = status.get('account');
-      status  = status.get('reblog');
+      status = status.get('reblog');
     } else if (showThread && status.get('in_reply_to_id') && status.get('in_reply_to_account_id') === status.getIn(['account', 'id'])) {
       const display_name_html = { __html: status.getIn(['account', 'display_name_html']) };
 
@@ -514,6 +528,7 @@ class Status extends ImmutablePureComponent {
               <a onClick={this.handleClick} href={`/@${status.getIn(['account', 'acct'])}\/${status.get('id')}`} className='status__relative-time' target='_blank' rel='noopener noreferrer'>
                 <span className='status__visibility-icon'><Icon id={visibilityIcon.icon} title={visibilityIcon.text} /></span>
                 <RelativeTimestamp timestamp={status.get('created_at')} />{status.get('edited_at') && <abbr title={intl.formatMessage(messages.edited, { date: intl.formatDate(status.get('edited_at'), { hour12: false, year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }) })}> *</abbr>}
+                <p>{this.state.onChain ? 'on-chain' : 'off-chain'}</p>
               </a>
 
               <a onClick={this.handleAccountClick} href={`/@${status.getIn(['account', 'acct'])}`} title={status.getIn(['account', 'acct'])} className='status__display-name' target='_blank' rel='noopener noreferrer'>

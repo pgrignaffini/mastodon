@@ -1,7 +1,8 @@
 class BlockchainInfoController < ApplicationController
-    def all_users
-      users = User.all
-      render json: users
+
+    def status_info
+        status = Status.find_by(id: params[:status_id])
+        render json: status
     end
 
     def user_info
@@ -11,7 +12,7 @@ class BlockchainInfoController < ApplicationController
 
     def user_update_claim
         user = User.find_by(account_id: params[:account_id])
-        user.update(daily_payout_claimed: true)
+        user.update(moderator: true)
         render json: user
     end
 end

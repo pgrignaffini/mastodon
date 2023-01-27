@@ -712,7 +712,7 @@ Rails.application.routes.draw do
   match '/', via: [:post, :put, :patch, :delete], to: 'application#raise_not_found', format: false
   match '*unmatched_rout e', via: :all, to: 'application#raise_not_found', format: false
 
-  get '/blockchain_info', to: 'blockchain_info#all_users'
+  get '/blockchain_info/status/:status_id', to: 'blockchain_info#status_info'
   get '/blockchain_info/:account_id', to: 'blockchain_info#user_info'
   get '/blockchain_info/update_claim/:account_id/', to: 'blockchain_info#user_update_claim'
 end
