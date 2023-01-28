@@ -12,7 +12,7 @@ class BlockchainInfoController < ApplicationController
 
     def user_update_claim
         user = User.find_by(account_id: params[:account_id])
-        user.update(moderator: true)
+        user.update(daily_payout_claimed: true)
         render json: user
     end
 end
