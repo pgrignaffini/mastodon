@@ -3,6 +3,7 @@
 import React from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import Button from 'mastodon/components/button';
 
 export default class BlockchainInfoPanel extends React.PureComponent {
 
@@ -16,6 +17,22 @@ export default class BlockchainInfoPanel extends React.PureComponent {
 
     static propTypes = {
         accountId: PropTypes.string.isRequired,
+    }
+
+    handleClaim = () => {
+        axios.get(`/blockchain_info/update_claim/${this.props.accountId}`, { cancelToken: this.source.token })
+            .then(response => {
+                this.setState({ data: response.data });
+                // eslint-disable-next-line no-console
+                console.log('response data', response.data);
+            })
+            .catch(error => {
+                if (axios.isCancel(error)) {
+                    console.error('Request canceled', error.message);
+                } else {
+                    console.error(error);
+                }
+            });
     }
 
     componentDidMount() {
@@ -37,6 +54,8 @@ export default class BlockchainInfoPanel extends React.PureComponent {
     componentWillUnmount() {
         this.source.cancel('Canceling request as component is unmounting.');
     };
+
+
 
 
     render() {
@@ -64,6 +83,9 @@ export default class BlockchainInfoPanel extends React.PureComponent {
                         <dl style={{ display: 'flex', alignItems: 'center' }}>
                             <dt>Daily Reward</dt>
                             <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_payout_value ? this.state.data.daily_payout_value.toFixed(0) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
+                        </dl>
+                        <dl>
+                            <Button text='Claim' block onClick={this.handleClaim} disabled={this.state.data?.daily_payout_claimed} />
                         </dl>
                     </div>
                 </div>
