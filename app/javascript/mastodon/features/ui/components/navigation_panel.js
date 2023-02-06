@@ -26,6 +26,7 @@ const messages = defineMessages({
   followsAndFollowers: { id: 'navigation_bar.follows_and_followers', defaultMessage: 'Follows and followers' },
   about: { id: 'navigation_bar.about', defaultMessage: 'About' },
   search: { id: 'navigation_bar.search', defaultMessage: 'Search' },
+  invites: { id: 'navigation_bar.invites', defaultMessage: 'Invite people to earn rewards' },
 });
 
 export default @injectIntl
@@ -40,7 +41,7 @@ class NavigationPanel extends React.Component {
     intl: PropTypes.object.isRequired,
   };
 
-  render () {
+  render() {
     const { intl } = this.props;
     const { signedIn, disabledAccountId } = this.context.identity;
 
@@ -75,7 +76,7 @@ class NavigationPanel extends React.Component {
         {!signedIn && (
           <div className='navigation-panel__sign-in-banner'>
             <hr />
-            { disabledAccountId ? <DisabledAccountBanner /> : <SignInBanner /> }
+            {disabledAccountId ? <DisabledAccountBanner /> : <SignInBanner />}
           </div>
         )}
 
@@ -91,6 +92,9 @@ class NavigationPanel extends React.Component {
             <hr />
 
             <ColumnLink transparent href='/settings/preferences' icon='cog' text={intl.formatMessage(messages.preferences)} />
+            <ColumnLink style={{ backgroundColor: '#6364ff' }} href='/invites' icon='user-plus' text={intl.formatMessage(messages.invites)} />
+
+
           </React.Fragment>
         )}
 

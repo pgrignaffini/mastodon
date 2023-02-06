@@ -1193,7 +1193,7 @@ it:
       one: un uso
       other: "%{count} utilizzi"
     max_uses_prompt: Nessun limite
-    prompt: Genera e condividi dei link con altri per concedere l'accesso a questo server
+    prompt: Genera e condividi dei link con altri per concedere l'accesso a questo server. Guadagna 10 Thread tokens per ogni utente che usa il tuo link per iscriversi e ricevi una ricompensa ogni volta che un utente che hai invitato riscatta il suo airdrop giornaliero.
     table:
       expires_at: Scade
       uses: Utilizzi

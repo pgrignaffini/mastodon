@@ -354,36 +354,6 @@ class Header extends ImmutablePureComponent {
     const isMobileView = this.state.width < 500;
     const isTwoColumnView = this.state.width < 1175;
 
-    const mobileView = (
-      <>
-        <dl style={{ display: 'flex', alignItems: 'center' }}>
-          <dt><FormattedMessage id='balance' defaultMessage='Balance' /></dt>
-          <dd style={{ marginLeft: '1rem' }}>{this.state.data.num_tokens_available ? this.state.data.num_tokens_available.toFixed(0) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
-        </dl>
-        <dl style={{ display: 'flex', alignItems: 'center' }}>
-          <dt><FormattedMessage id='daily' defaultMessage='Daily Reward' /></dt>
-          <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_payout_value ? this.state.data.daily_payout_value.toFixed(0) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
-        </dl>
-        <dl style={{ display: 'flex', alignItems: 'center' }}>
-          <dt>Claim streak <span role='img' aria-label='claim-streak'>🏆</span></dt>
-          <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_claim_day_streak ? this.state.data.daily_claim_day_streak : 0}</dd>
-        </dl>
-        <dl>
-          <Button text='Claim' block onClick={this.handleClaim} disabled={this.state?.data?.daily_payout_claimed} />
-        </dl>
-      </>
-    );
-
-    const desktopView = (
-      <dl style={{ display: 'flex', alignItems: 'center' }}>
-        <dt><FormattedMessage id='balance' defaultMessage='Balance' /></dt>
-        <dd style={{ marginLeft: '1rem' }}>{this.state.data.num_tokens_available ? this.state.data.num_tokens_available.toFixed(0) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
-        <dt><FormattedMessage id='daily' defaultMessage='Daily Reward' /></dt>
-        <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_payout_value ? this.state.data.daily_payout_value.toFixed(0) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
-        <Button text='Claim' onClick={this.handleClaim} disabled={this.state?.data?.daily_payout_claimed} />
-      </dl>
-    );
-
     return (
       <div className={classNames('account__header', { inactive: !!account.get('moved') })} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
         <div className='account__header__image'>
