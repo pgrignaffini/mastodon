@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import PropTypes from 'prop-types';
@@ -81,6 +82,8 @@ class Header extends ImmutablePureComponent {
     super(props);
     this.state = {
       data: {},
+      width: window.innerWidth,
+      height: window.innerHeight,
     };
     this.source = axios.CancelToken.source();
   };
@@ -114,11 +117,10 @@ class Header extends ImmutablePureComponent {
   };
 
   componentDidMount() {
+    window.addEventListener('resize', this.handleResize);
     axios.get(`/blockchain_info/${this.props.account.get('id')}`, { cancelToken: this.source.token })
       .then(response => {
         this.setState({ data: response.data });
-        // eslint-disable-next-line no-console
-        console.log('response data', response.data);
       })
       .catch(error => {
         if (axios.isCancel(error)) {
@@ -130,15 +132,21 @@ class Header extends ImmutablePureComponent {
   };
 
   componentWillUnmount() {
+    window.removeEventListener('resize', this.handleResize);
     this.source.cancel('Canceling request as component is unmounting.');
+  };
+
+  handleResize = () => {
+    this.setState({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
   };
 
   handleClaim = () => {
     axios.get(`/blockchain_info/update_claim/${this.props.account.get('id')}`, { cancelToken: this.source.token })
       .then(response => {
         this.setState({ data: response.data });
-        // eslint-disable-next-line no-console
-        console.log('response data', response.data);
       })
       .catch(error => {
         if (axios.isCancel(error)) {
@@ -343,6 +351,39 @@ class Header extends ImmutablePureComponent {
       badge = null;
     }
 
+    const isMobileView = this.state.width < 500;
+    const isTwoColumnView = this.state.width < 1175;
+
+    const mobileView = (
+      <>
+        <dl style={{ display: 'flex', alignItems: 'center' }}>
+          <dt><FormattedMessage id='balance' defaultMessage='Balance' /></dt>
+          <dd style={{ marginLeft: '1rem' }}>{this.state.data.num_tokens_available ? this.state.data.num_tokens_available.toFixed(0) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
+        </dl>
+        <dl style={{ display: 'flex', alignItems: 'center' }}>
+          <dt><FormattedMessage id='daily' defaultMessage='Daily Reward' /></dt>
+          <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_payout_value ? this.state.data.daily_payout_value.toFixed(0) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
+        </dl>
+        <dl style={{ display: 'flex', alignItems: 'center' }}>
+          <dt>Claim streak <span role='img' aria-label='claim-streak'>🏆</span></dt>
+          <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_claim_day_streak ? this.state.data.daily_claim_day_streak : 0}</dd>
+        </dl>
+        <dl>
+          <Button text='Claim' block onClick={this.handleClaim} disabled={this.state?.data?.daily_payout_claimed} />
+        </dl>
+      </>
+    );
+
+    const desktopView = (
+      <dl style={{ display: 'flex', alignItems: 'center' }}>
+        <dt><FormattedMessage id='balance' defaultMessage='Balance' /></dt>
+        <dd style={{ marginLeft: '1rem' }}>{this.state.data.num_tokens_available ? this.state.data.num_tokens_available.toFixed(0) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
+        <dt><FormattedMessage id='daily' defaultMessage='Daily Reward' /></dt>
+        <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_payout_value ? this.state.data.daily_payout_value.toFixed(0) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
+        <Button text='Claim' onClick={this.handleClaim} disabled={this.state?.data?.daily_payout_claimed} />
+      </dl>
+    );
+
     return (
       <div className={classNames('account__header', { inactive: !!account.get('moved') })} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
         <div className='account__header__image'>
@@ -391,10 +432,10 @@ class Header extends ImmutablePureComponent {
                   <dl style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <dt><FormattedMessage id='account.joined_short' defaultMessage='Joined' /></dt>
                     <dd style={{ marginLeft: '1rem' }}>{intl.formatDate(account.get('created_at'), { year: 'numeric', month: 'short', day: '2-digit' })}</dd>
-                    <div style={{ display: 'flex' }} >
+                    {!isMobileView && isTwoColumnView && <div style={{ display: 'flex' }} >
                       <dt>Claim streak <span role='img' aria-label='claim-streak'>🏆</span></dt>
                       <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_claim_day_streak ? this.state.data.daily_claim_day_streak : 0}</dd>
-                    </div>
+                    </div>}
                   </dl>
 
                   {fields.map((pair, i) => (
@@ -407,13 +448,32 @@ class Header extends ImmutablePureComponent {
                     </dl>
                   ))}
 
-                  <dl style={{ display: 'flex', alignItems: 'center' }}>
-                    <dt><FormattedMessage id='balance' defaultMessage='Balance' /></dt>
-                    <dd style={{ marginLeft: '1rem' }}>{this.state.data.num_tokens_available ? this.state.data.num_tokens_available : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
-                    <dt><FormattedMessage id='daily' defaultMessage='Daily Reward' /></dt>
-                    <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_payout_value ? this.state.data.daily_payout_value.toFixed(0) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
-                    <Button text='Claim' onClick={this.handleClaim} disabled={this.state?.data?.daily_payout_claimed} />
-                  </dl>
+                  {isTwoColumnView ?
+                    isMobileView ? ((
+                      <>
+                        <dl style={{ display: 'flex', alignItems: 'center' }}>
+                          <dt><FormattedMessage id='balance' defaultMessage='Balance' /></dt>
+                          <dd style={{ marginLeft: '1rem' }}>{this.state.data.num_tokens_available ? this.state.data.num_tokens_available.toFixed(0) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
+                        </dl>
+                        <dl style={{ display: 'flex', alignItems: 'center' }}>
+                          <dt><FormattedMessage id='daily' defaultMessage='Daily Reward' /></dt>
+                          <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_payout_value ? this.state.data.daily_payout_value.toFixed(0) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
+                        </dl>
+                        <dl style={{ display: 'flex', alignItems: 'center' }}>
+                          <dt>Claim streak <span role='img' aria-label='claim-streak'>🏆</span></dt>
+                          <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_claim_day_streak ? this.state.data.daily_claim_day_streak : 0}</dd>
+                        </dl>
+                        <dl>
+                          <Button text='Claim' block onClick={this.handleClaim} disabled={this.state?.data?.daily_payout_claimed} />
+                        </dl>
+                      </>
+                    )) : ((<dl style={{ display: 'flex', alignItems: 'center' }}>
+                      <dt><FormattedMessage id='balance' defaultMessage='Balance' /></dt>
+                      <dd style={{ marginLeft: '1rem' }}>{this.state.data.num_tokens_available ? this.state.data.num_tokens_available.toFixed(0) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
+                      <dt><FormattedMessage id='daily' defaultMessage='Daily Reward' /></dt>
+                      <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_payout_value ? this.state.data.daily_payout_value.toFixed(0) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
+                      <Button text='Claim' onClick={this.handleClaim} disabled={this.state?.data?.daily_payout_claimed} />
+                    </dl>)) : null}
                 </div>
 
                 <div className='upload-progress' style={{ flex: '1 1 0%', marginTop: '0.5rem' }}>

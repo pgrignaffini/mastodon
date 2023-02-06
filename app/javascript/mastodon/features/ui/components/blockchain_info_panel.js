@@ -23,8 +23,6 @@ export default class BlockchainInfoPanel extends React.PureComponent {
         axios.get(`/blockchain_info/update_claim/${this.props.accountId}`, { cancelToken: this.source.token })
             .then(response => {
                 this.setState({ data: response.data });
-                // eslint-disable-next-line no-console
-                console.log('response data', response.data);
             })
             .catch(error => {
                 if (axios.isCancel(error)) {
@@ -39,8 +37,6 @@ export default class BlockchainInfoPanel extends React.PureComponent {
         axios.get(`/blockchain_info/${this.props.accountId}`, { cancelToken: this.source.token })
             .then(response => {
                 this.setState({ data: response.data });
-                // eslint-disable-next-line no-console
-                console.log('response data', response.data);
             })
             .catch(error => {
                 if (axios.isCancel(error)) {
@@ -54,8 +50,6 @@ export default class BlockchainInfoPanel extends React.PureComponent {
     componentWillUnmount() {
         this.source.cancel('Canceling request as component is unmounting.');
     };
-
-
 
 
     render() {
@@ -78,11 +72,15 @@ export default class BlockchainInfoPanel extends React.PureComponent {
                         </dl>
                         <dl style={{ display: 'flex', alignItems: 'center' }}>
                             <dt>Balance</dt>
-                            <dd style={{ marginLeft: '1rem' }}>{this.state.data.num_tokens_available ? this.state.data.num_tokens_available : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
+                            <dd style={{ marginLeft: '1rem' }}>{this.state.data.num_tokens_available ? this.state.data.num_tokens_available.toFixed(0) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
                         </dl>
                         <dl style={{ display: 'flex', alignItems: 'center' }}>
                             <dt>Daily Reward</dt>
                             <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_payout_value ? this.state.data.daily_payout_value.toFixed(0) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
+                        </dl>
+                        <dl style={{ display: 'flex', alignItems: 'center' }}>
+                            <dt>Claim streak <span role='img' aria-label='claim-streak'>🏆</span></dt>
+                            <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_claim_day_streak ? this.state.data.daily_claim_day_streak : 0}</dd>
                         </dl>
                         <dl>
                             <Button text='Claim' block onClick={this.handleClaim} disabled={this.state.data?.daily_payout_claimed} />
