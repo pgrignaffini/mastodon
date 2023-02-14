@@ -222,12 +222,6 @@ class ComposeForm extends ImmutablePureComponent {
 
     return (
       <>
-        {/* <Overlay show={open} placement={placement} target={this}> */}
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <img src='/logo/openai.png' alt='OpenAI' style={{ width: '65px', height: '45px' }} />
-          <p style={{ flex: '1 1 0%', fontStyle: 'italic' }}>"Your daily prompt with long sentences and unexpected turns of phrase"</p>
-        </div>
-        {/* </Overlay> */}
         <form className='compose-form' onSubmit={this.handleSubmit}>
           <WarningContainer />
 
