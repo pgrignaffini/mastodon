@@ -139,7 +139,7 @@ class Status extends ImmutablePureComponent {
     axios.get(`/blockchain_info/status/${this.state.statusId}`)
       .then(response => {
         // eslint-disable-next-line no-console
-        console.log('status data', response.data);
+        // console.log('status data', response.data);
         this.setState({ onChain: response.data?.event_index });
       })
       .catch(error => {
@@ -528,7 +528,6 @@ class Status extends ImmutablePureComponent {
               <a onClick={this.handleClick} href={`/@${status.getIn(['account', 'acct'])}\/${status.get('id')}`} className='status__relative-time' target='_blank' rel='noopener noreferrer'>
                 <span className='status__visibility-icon'><Icon id={visibilityIcon.icon} title={visibilityIcon.text} /></span>
                 <RelativeTimestamp timestamp={status.get('created_at')} />{status.get('edited_at') && <abbr title={intl.formatMessage(messages.edited, { date: intl.formatDate(status.get('edited_at'), { hour12: false, year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }) })}> *</abbr>}
-                <p>{this.state.onChain ? 'on-chain' : 'off-chain'}</p>
               </a>
 
               <a onClick={this.handleAccountClick} href={`/@${status.getIn(['account', 'acct'])}`} title={status.getIn(['account', 'acct'])} className='status__display-name' target='_blank' rel='noopener noreferrer'>
@@ -538,6 +537,11 @@ class Status extends ImmutablePureComponent {
 
                 <DisplayName account={status.get('account')} />
               </a>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row-reverse' }}>
+              <Icon id={`${this.state.onChain ? 'lock' : 'unlock'}`} />
+              <p style={{ marginRight: '0.4rem' }}>{`${this.state.onChain ? 'on-chain' : 'off-chain'}`}</p>
             </div>
 
             <StatusContent

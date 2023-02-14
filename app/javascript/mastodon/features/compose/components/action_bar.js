@@ -32,7 +32,7 @@ class ActionBar extends React.PureComponent {
     this.props.onLogout();
   }
 
-  render () {
+  render() {
     const { intl } = this.props;
 
     let menu = [];

@@ -13,6 +13,7 @@ import { connectUserStream } from 'mastodon/actions/streaming';
 import ErrorBoundary from 'mastodon/components/error_boundary';
 import initialState, { title as siteTitle } from 'mastodon/initial_state';
 import { getLocale } from 'mastodon/locales';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 const { localeData, messages } = getLocale();
 addLocaleData(localeData);
@@ -62,34 +63,43 @@ export default class Mastodon extends React.PureComponent {
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     if (this.disconnect) {
       this.disconnect();
       this.disconnect = null;
     }
   }
 
-  shouldUpdateScroll (prevRouterProps, { location }) {
+  shouldUpdateScroll(prevRouterProps, { location }) {
     return !(location.state?.mastodonModalKey && location.state?.mastodonModalKey !== prevRouterProps?.location?.state?.mastodonModalKey);
   }
 
-  render () {
+  render() {
     const { locale } = this.props;
 
-    return (
-      <IntlProvider locale={locale} messages={messages}>
-        <ReduxProvider store={store}>
-          <ErrorBoundary>
-            <BrowserRouter>
-              <ScrollContext shouldUpdateScroll={this.shouldUpdateScroll}>
-                <Route path='/' component={UI} />
-              </ScrollContext>
-            </BrowserRouter>
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
+        },
+      },
+    });
 
-            <Helmet defaultTitle={title} titleTemplate={`%s - ${title}`} />
-          </ErrorBoundary>
-        </ReduxProvider>
-      </IntlProvider>
+    return (
+      <QueryClientProvider client={queryClient}>
+        <IntlProvider locale={locale} messages={messages}>
+          <ReduxProvider store={store}>
+            <ErrorBoundary>
+              <BrowserRouter>
+                <ScrollContext shouldUpdateScroll={this.shouldUpdateScroll}>
+                  <Route path='/' component={UI} />
+                </ScrollContext>
+              </BrowserRouter>
+              <Helmet defaultTitle={title} titleTemplate={`%s - ${title}`} />
+            </ErrorBoundary>
+          </ReduxProvider>
+        </IntlProvider>
+      </QueryClientProvider>
     );
   }
 

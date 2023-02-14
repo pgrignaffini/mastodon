@@ -1191,7 +1191,7 @@ en:
       one: 1 use
       other: "%{count} uses"
     max_uses_prompt: No limit
-    prompt: Generate and share links with others to grant access to this server
+    prompt: Generate and share links with others to grant access to this server. Earn 10 Thread Tokens for every user who uses your referral link to sign up for PostThread and receive a reward each day they claim their daily airdrop.
     table:
       expires_at: Expires
       uses: Uses

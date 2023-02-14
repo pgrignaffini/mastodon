@@ -13,6 +13,7 @@ export default class BlockchainInfoPanel extends React.PureComponent {
             data: {},
         };
         this.source = axios.CancelToken.source();
+        this.showClaimError = false;
     };
 
     static propTypes = {
@@ -23,12 +24,14 @@ export default class BlockchainInfoPanel extends React.PureComponent {
         axios.get(`/blockchain_info/update_claim/${this.props.accountId}`, { cancelToken: this.source.token })
             .then(response => {
                 this.setState({ data: response.data });
+                this.setState({ showClaimError: false });
             })
             .catch(error => {
                 if (axios.isCancel(error)) {
                     console.error('Request canceled', error.message);
                 } else {
                     console.error(error);
+                    this.setState({ showClaimError: true });
                 }
             });
     }
@@ -84,6 +87,11 @@ export default class BlockchainInfoPanel extends React.PureComponent {
                         </dl>
                         <dl>
                             <Button text='Claim' block onClick={this.handleClaim} disabled={this.state.data?.daily_payout_claimed} />
+                            {this.state.showClaimError &&
+                                <>
+                                    <hr />
+                                    <div style={{ color: '#ff4c70' }}>Publish a post today to claim your daily reward</div>
+                                </>}
                         </dl>
                     </div>
                 </div>

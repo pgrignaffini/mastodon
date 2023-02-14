@@ -26,6 +26,8 @@ const messages = defineMessages({
   followsAndFollowers: { id: 'navigation_bar.follows_and_followers', defaultMessage: 'Follows and followers' },
   about: { id: 'navigation_bar.about', defaultMessage: 'About' },
   search: { id: 'navigation_bar.search', defaultMessage: 'Search' },
+  invites: { id: 'navigation_bar.invites', defaultMessage: 'Invite people to earn rewards' },
+  image_generation: { id: 'navigation_bar.image_generation', defaultMessage: 'Image Generation' },
 });
 
 export default @injectIntl
@@ -40,7 +42,7 @@ class NavigationPanel extends React.Component {
     intl: PropTypes.object.isRequired,
   };
 
-  render () {
+  render() {
     const { intl } = this.props;
     const { signedIn, disabledAccountId } = this.context.identity;
 
@@ -75,7 +77,7 @@ class NavigationPanel extends React.Component {
         {!signedIn && (
           <div className='navigation-panel__sign-in-banner'>
             <hr />
-            { disabledAccountId ? <DisabledAccountBanner /> : <SignInBanner /> }
+            {disabledAccountId ? <DisabledAccountBanner /> : <SignInBanner />}
           </div>
         )}
 
@@ -85,12 +87,16 @@ class NavigationPanel extends React.Component {
             <ColumnLink transparent to='/favourites' icon='star' text={intl.formatMessage(messages.favourites)} />
             <ColumnLink transparent to='/bookmarks' icon='bookmark' text={intl.formatMessage(messages.bookmarks)} />
             <ColumnLink transparent to='/lists' icon='list-ul' text={intl.formatMessage(messages.lists)} />
+            <ColumnLink transparent to='/image_generation' icon='image' text={intl.formatMessage(messages.image_generation)} />
 
             <ListPanel />
 
             <hr />
 
             <ColumnLink transparent href='/settings/preferences' icon='cog' text={intl.formatMessage(messages.preferences)} />
+            <ColumnLink style={{ backgroundColor: '#6364ff' }} href='/invites' icon='user-plus' text={intl.formatMessage(messages.invites)} />
+
+
           </React.Fragment>
         )}
 
