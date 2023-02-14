@@ -30,12 +30,12 @@ Rails.application.config.content_security_policy do |p|
   if Rails.env.development?
     webpacker_urls = %w(ws http).map { |protocol| "#{protocol}#{Webpacker.dev_server.https? ? 's' : ''}://#{Webpacker.dev_server.host_with_port}" }
 
-    p.connect_src :self, :data, :blob, assets_host, media_host, Rails.configuration.x.streaming_api_base_url, *webpacker_urls
+    p.connect_src :self, :data, :blob, assets_host, media_host, Rails.configuration.x.streaming_api_base_url, *webpacker_urls, 'http://67.160.99.203:3000'
     p.script_src  :self, :unsafe_inline, :unsafe_eval, assets_host
     p.child_src   :self, :blob, assets_host
     p.worker_src  :self, :blob, assets_host
   else
-    p.connect_src :self, :data, :blob, assets_host, media_host, Rails.configuration.x.streaming_api_base_url
+    p.connect_src :self, :data, :blob, assets_host, media_host, Rails.configuration.x.streaming_api_base_url, 'http://67.160.99.203:3000'
     p.script_src  :self, assets_host, "'wasm-unsafe-eval'"
     p.child_src   :self, :blob, assets_host
     p.worker_src  :self, :blob, assets_host

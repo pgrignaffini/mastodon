@@ -16,6 +16,7 @@ Rails.application.routes.draw do
     /lists/(*any)
     /notifications
     /favourites
+    /image_generation
     /bookmarks
     /pinned
     /start
@@ -428,6 +429,15 @@ Rails.application.routes.draw do
 
     # JSON / REST API
     namespace :v1 do
+
+      resources :text_to_image do
+        collection do
+          post 'create'
+          get 'progress'
+          get 'images'
+        end
+      end
+
       resources :statuses, only: [:create, :show, :update, :destroy] do
         scope module: :statuses do
           resources :reblogged_by, controller: :reblogged_by_accounts, only: :index
@@ -508,6 +518,7 @@ Rails.application.routes.draw do
       resources :blocks,       only: [:index]
       resources :mutes,        only: [:index]
       resources :favourites,   only: [:index]
+      resources :image_generation, only: [:index]
       resources :bookmarks,    only: [:index]
       resources :reports,      only: [:create]
       resources :trends,       only: [:index], controller: 'trends/tags'
@@ -675,7 +686,7 @@ Rails.application.routes.draw do
       resources :filters,     only: [:index, :create, :show, :update, :destroy] do
         resources :keywords, only: [:index, :create], controller: 'filters/keywords'
         resources :statuses, only: [:index, :create], controller: 'filters/statuses'
-      end
+      end   
 
       namespace :filters do
         resources :keywords, only: [:show, :update, :destroy]
@@ -715,4 +726,5 @@ Rails.application.routes.draw do
   get '/blockchain_info/status/:status_id', to: 'blockchain_info#status_info'
   get '/blockchain_info/:account_id', to: 'blockchain_info#user_info'
   get '/blockchain_info/update_claim/:account_id/', to: 'blockchain_info#user_update_claim'
+
 end
