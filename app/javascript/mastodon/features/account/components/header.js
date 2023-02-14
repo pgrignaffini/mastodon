@@ -434,7 +434,7 @@ class Header extends ImmutablePureComponent {
                           <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_claim_day_streak ? this.state.data.daily_claim_day_streak : 0}</dd>
                         </dl>
                         <dl>
-                          <Button text='Claim' block onClick={this.handleClaim} disabled={this.state?.data?.daily_payout_claimed} />
+                          {(account.get('id') === me) && <Button text='Claim' block onClick={this.handleClaim} disabled={this.state?.data?.daily_payout_claimed} />}
                         </dl>
                       </>
                     )) : ((<dl style={{ display: 'flex', alignItems: 'center' }}>
@@ -442,7 +442,7 @@ class Header extends ImmutablePureComponent {
                       <dd style={{ marginLeft: '1rem' }}>{this.state.data.num_tokens_available ? this.state.data.num_tokens_available.toFixed(0) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
                       <dt><FormattedMessage id='daily' defaultMessage='Daily Reward' /></dt>
                       <dd style={{ marginLeft: '1rem' }}>{this.state.data.daily_payout_value ? this.state.data.daily_payout_value.toFixed(0) : 0}<span role='img' aria-label='thread-tokens'>{' '}🧵</span></dd>
-                      <Button text='Claim' onClick={this.handleClaim} disabled={this.state?.data?.daily_payout_claimed} />
+                      {(account.get('id') === me) && <Button text='Claim' onClick={this.handleClaim} disabled={this.state?.data?.daily_payout_claimed} />}
                     </dl>)) : null}
                 </div>
 
