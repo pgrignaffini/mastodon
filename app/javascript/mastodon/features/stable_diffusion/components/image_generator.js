@@ -6,10 +6,10 @@ import Button from 'mastodon/components/button';
 const ImageGenerator = () => {
 
     const [prompt, setPrompt] = React.useState('');
+    const [style, setStyle] = React.useState('freestyle');
     const [isLoading, setIsLoading] = React.useState(false);
     const [request, setRequest] = React.useState(undefined);
     const [progress, setProgress] = React.useState(undefined);
-    const style = '';
 
     const text2Image = async (e) => {
         e.preventDefault();
@@ -100,10 +100,11 @@ const ImageGenerator = () => {
 
     return (
         <div style={{ backgroundColor: '#282C37', minHeight: '100vh' }}>
-            <form className='column-inline-form' onSubmit={(e) => text2Image(e)}>
+            <form style={{ padding: '1rem' }} onSubmit={(e) => text2Image(e)}>
                 <label>
                     <span style={{ display: 'none' }}>{label}</span>
                     <input
+                        style={{ width: '100%' }}
                         type='text'
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
@@ -112,11 +113,37 @@ const ImageGenerator = () => {
                         placeholder={label}
                     />
                 </label>
-                <Button
-                    text={title}
-                    type='submit'
-                    disabled={isLoading}
-                />
+                <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <select style={{ padding: '0.5rem', borderRadius: '0.3rem', width: '50%', flex: '1 1 auto', outline: 'none' }} value={style} onChange={(e) => setStyle(e.target.value)}>
+                        <option value={'freestyle'}>Freestyle</option>
+                        <option value={'rendered-object-collection'}>Rendered Object</option>
+                        <option value={'cute-creature-collection'}>Cute Creature</option>
+                        <option value={'isometric-room-collection'}>Isometric Room</option>
+                        <option value={'low-poly-creature-collection'}>Low Poly Creature</option>
+                        <option value={'block-structure-collection'}>Block Structure</option>
+                        <option value={'sport-team-logo-collection'}>Sport Team Logo</option>
+                        <option value={'gold-pendant-wireframe-collection'}>Gold Pendant</option>
+                        <option value={'surreal-micro-world-collection'}>Surreal Micro World</option>
+                        <option value={'hyper-realistic-anime-portrait-collection'}>Anime Portrait</option>
+                        <option value={'cute-sticker-collection'}>Cute Sticker</option>
+                        <option value={'space-hologram-collection'}>Space Hologram</option>
+                        <option value={'psychedelic-pop-art-collection'}>Psychedelic Pop Art</option>
+                        <option value={'comic-art-collection'}>Comic Art</option>
+                        <option value={'3d-character-collection'}>3d Character</option>
+                        <option value={'silhouette-wallpaper-collection'}>Silhouette Wallpaper</option>
+                        <option value={'needle-felt-object-collection'}>Needle Felt Object</option>
+                        <option value={'flat-design-concept'}>Flat Design</option>
+                        <option value={'3d-render-concept'}>3D Render</option>
+                        <option value={'paper-cutout-concept'}>Paper Cutout</option>
+                        <option value={'modern-3d-animation-concept'}>3D Animation</option>
+                        <option value={'anime-concept'}>Anime</option>
+                    </select>
+                    <Button
+                        text={title}
+                        type='submit'
+                        disabled={isLoading}
+                    />
+                </div>
             </form>
             <div style={{ padding: '1rem' }}>
                 {(progressData && progressPercentage !== 0) ? (
