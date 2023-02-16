@@ -1,3 +1,5 @@
+/* eslint-disable consistent-return */
+/* eslint-disable indent */
 import React from 'react';
 import axios from 'axios';
 import { useQuery } from 'react-query';
@@ -20,9 +22,11 @@ const ImageGenerator = () => {
                 prompt,
                 style,
             })
-            .catch((err) => {
-                console.log(err);
+            .catch(() => {
+                setRequest(undefined);
+                setProgress(undefined);
                 setIsLoading(false);
+                alert('An error occurred while generating the image');
             });
         setRequest(response?.data);
         return response;
@@ -36,11 +40,14 @@ const ImageGenerator = () => {
                 job_no: request.job_no,
             },
         }).catch((error) => {
+            setRequest(undefined);
+            setProgress(undefined);
             setIsLoading(false);
+            alert('An error occurred while generating the image');
             if (axios.isAxiosError(error)) {
-                return error.message;
+                console.err(error.message);
             } else {
-                return 'An unexpected error occurred';
+                console.err('An unexpected error occurred');
             }
         });
         let progress = response?.data;
@@ -59,11 +66,14 @@ const ImageGenerator = () => {
         const response = await axios.get('/api/v1/text_to_image/images', {
             params: { job_hash: request?.job_hash },
         }).catch((error) => {
+            setRequest(undefined);
+            setProgress(undefined);
             setIsLoading(false);
+            alert('An error occurred while generating the image');
             if (axios.isAxiosError(error)) {
-                return error.message;
+                console.err(error.message);
             } else {
-                return 'An unexpected error occurred';
+                console.err('An unexpected error occurred');
             }
         });
 
@@ -72,22 +82,25 @@ const ImageGenerator = () => {
         return splitImages;
     };
 
-    const { data: progressData } = useQuery(
-        'progress',
-        () => checkProgress(request),
-        {
-            enabled:
-                !!request && (progress?.state.done === false || progress === undefined),
-            refetchInterval: 1000,
-            onSuccess(data) {
-                setProgress(data);
-            },
+    useQuery('progress', () => checkProgress(request), {
+        enabled:
+            !!request && (progress?.state.done === false || progress === undefined),
+        refetchInterval: 2000,
+        onSuccess(data) {
+            setProgress(data);
         },
+    },
     );
 
-    const { data: images } = useQuery('images', getImages, {
+    const { data: images, isFetching: isFetchingImages } = useQuery('images', getImages, {
         enabled: !!progress && progress.state.done,
         onSuccess: () => {
+            setRequest(undefined);
+            setProgress(undefined);
+            setIsLoading(false);
+        },
+        onError: () => {
+            alert('An error occurred while generating the image');
             setRequest(undefined);
             setProgress(undefined);
             setIsLoading(false);
@@ -114,7 +127,7 @@ const ImageGenerator = () => {
                     />
                 </label>
                 <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <select style={{ padding: '0.5rem', borderRadius: '0.3rem', width: '50%', flex: '1 1 auto', outline: 'none' }} value={style} onChange={(e) => setStyle(e.target.value)}>
+                    <select style={{ padding: '0.5rem', borderRadius: '0.3rem', width: '50%', flex: '1 1 auto', outline: 'none', marginRight: '1rem' }} value={style} onChange={(e) => setStyle(e.target.value)}>
                         <option value={'freestyle'}>Freestyle</option>
                         <option value={'rendered-object-collection'}>Rendered Object</option>
                         <option value={'cute-creature-collection'}>Cute Creature</option>
@@ -146,7 +159,7 @@ const ImageGenerator = () => {
                 </div>
             </form>
             <div style={{ padding: '1rem' }}>
-                {(progressData && progressPercentage !== 0) ? (
+                {progressPercentage > 1 ? (
                     <div className='upload-progress__message'>
                         <div>
                             <p>{`Progress: ${progressPercentage}%`}</p>
@@ -156,6 +169,7 @@ const ImageGenerator = () => {
                         </div>
                     </div>
                 ) : null}
+                {isFetchingImages ? <p>Fetching images...</p> : null}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column' }} >
                 {images &&
